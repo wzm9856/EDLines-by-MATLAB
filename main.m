@@ -13,9 +13,9 @@ saveas(gcf, 'step222', 'pdf')
 [image_grad, image_orin] = calc_grad(image_guass);
 % image_ori = abs(image_x) > abs(image_y);
 % 1 for vertical edge and 0 for horizontal edge
-% threshold = max(image_grad, [], 'all') * 0.05;
-% image_thre = abs(image_grad) > threshold;
-figure; imshow( abs(image_grad)>threshold);
+threshold = max(image_grad, [], 'all') * 0.05;
+image_thre = abs(image_grad) > threshold;
+figure; imshow( abs(image_grad)>threshold );
 disp('3');
 saveas(gcf, 'step333', 'pdf');
 
