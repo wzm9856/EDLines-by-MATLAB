@@ -25,15 +25,32 @@ maxima1 = l & r;
 maxima2 = ur & dl;
 maxima3 = u & d;
 maxima4 = ul & dr;
-maxima = [maxima1; maxima2; maxima3; maxima4];
-edge_point = maxima & grad_thre;
+maxima(:,:,1) = maxima1;
+maxima(:,:,2) = maxima2;
+maxima(:,:,3) = maxima3;
+maxima(:,:,4) = maxima4;
+
+% 4 bar3 3  bar2 2
+% bar4           bar1
+%        A       1
+% bar5           bar8
+%   bar6    bar7
+bar1 = pi/8;    bar2 = 3*pi/8;  bar3 = 5*pi/8;  bar4 = 7*pi/8;
+bar5 = 9*pi/8;  bar6 = 11*pi/8; bar7 = 13*pi/8; bar8 = 15*pi/8;
+flag(:,:,1)=orin<bar1 | (orin>bar4&orin<bar5) | orin>bar8;
+flag(:,:,2)=(orin>bar1&orin<bar2) | (orin>bar5&orin<bar6);
+flag(:,:,3)=(orin>bar2&orin<bar3) | (orin>bar6&orin<bar7);
+flag(:,:,4)=(orin>bar3&orin<bar4) | (orin>bar7&orin<bar8);
+maxima_final = max(maxima&flag,[],3); %all maxima points
+thre_points = grad > grad_thre;
+edge_points = maxima_final & thre_points; % all maxima points which has a gradient bigger than grad_thre
 if k ~= 1
     no = k;
     while no < size(grad, 1)
-        output(no, :) = edge_point(no, :);
+        output(no, :) = edge_points(no, :);
         no = no + k;
     end
 else
-    output = edge_point;
+    output = edge_points;
 end
 

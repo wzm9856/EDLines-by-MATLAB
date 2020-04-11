@@ -1,6 +1,7 @@
-function [output, pointsMat, edgeList, edgeNo] = edge_drawing(grad, thre, anch, ori)
+function [output, pointsMat, edgeList, edgeNo] = edge_drawing(grad, thre, anch, orin)
+ori = (orin>pi/4 & orin<3*pi/4) | (orin>5*pi/4 & orin<7*pi/4);
 pointsMat = repmat(Points, size(grad,1), size(grad,2));
-edgeList = repmat(EdgeSeg(size(grad)), 1, 100000);
+edgeList = repmat(EdgeSeg(size(grad)), 1, 20000);
 edgeNo = 0;
 output = false(size(grad));
 for i = 2:size(grad, 1)-1
@@ -55,7 +56,7 @@ function [flag, next] = find_next(this, prev, grad, thre, ori, output, pointList
 %       2--next is already drawn and is in the current edge segment
 %       3--next is inside the edge zone, drawing continue
 i = this(1); j = this(2);
-if ori == 1  
+if ori == 0  % orintation of gradient: horizontal
     % vertical edge         A
     %                       B
     %                    ?  ?  ?

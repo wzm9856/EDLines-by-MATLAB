@@ -1,5 +1,5 @@
 function [lineList, lineCount] = line_extract(edgeList, edgeCount, pointsMat, MIN_LENGTH)
-lineList = repmat(Line, 1, 3000);
+lineList = repmat(Line, 1, 1000);
 lineCount = 0;
 for a = 1:edgeCount
     edge = edgeList(a);
