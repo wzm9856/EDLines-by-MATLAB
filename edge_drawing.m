@@ -13,13 +13,17 @@ for i = 2:size(grad, 1)-1
             edgeList(edgeNo) = edgeList(edgeNo).addPoint(this(1), this(2));
             pointsMat(this(1), this(2)) = pointsMat(this(1), this(2)).addEdge(edgeNo, 1);
             [flag, next] = find_next(this, prev, grad, thre, ori(i,j), output, edgeList(edgeNo));
+            % start connecting to one side
             while flag == 3 && next(1)>1 && next(1)<size(grad,1) && next(2)>1 && next(2)<size(grad,2)
                 % next is adequate, save it in the list and the mat
                 prev = this; this = next;
                 edgeList(edgeNo) = edgeList(edgeNo).addPoint(this(1), this(2));
                 pointsMat(this(1), this(2)) = pointsMat(this(1), this(2)).addEdge(edgeNo, 0);
                 output(this(1), this(2)) = 1;
-                [flag, next] = find_next(this, prev, grad, thre, ori(i,j), output, edgeList(edgeNo));
+                if(this(1)==279&&this(2)==703)
+                    
+                end
+                [flag, next] = find_next(this, prev, grad, thre, ori(this(1),this(2)), output, edgeList(edgeNo));
             end
             if flag == 0
                 pointsMat(this(1), this(2)).isEnd = 1;
@@ -31,9 +35,6 @@ for i = 2:size(grad, 1)-1
                     edgeNo = edgeNo + 1;
                     for a = 1:seg2.length
                         x = seg2.pointsList(1, a); y = seg2.pointsList(2, a);
-                        if x <= 0
-                            
-                        end
                         pointsMat(x, y).changeEdge(oldNo, edgeNo);
                     end
                 pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo-1, 1); 
@@ -62,17 +63,22 @@ if ori == 0  % orintation of gradient: horizontal
     %                    ?  ?  ?
     neibour = any(output(i-1:i+1,j-1:j+1), 2);
     de = neibour(1); in = neibour(3);
-    if (prev(1)==this(1) || prev(1)==0) && ~in && ~de % edge takes a turn here
+    if (prev(1)==this(1) || prev(1)==0) && ~in && ~de 
+        % edge takes a turn here    ?   ?   ?
+        %                           A   B
+        %                           ?   ?   ?
         [~, pos] = max([grad(i-1, j-1:j+1), grad(i+1, j-1:j+1)]);
-        haha = [[i-1, j-1]; [i-1, j]; [i-1, j+1]; [i+1, j-1]; [i+1, j]; [i+1, j+1]];
-        next = haha(pos, :);
+        list_of_questionmark = [[i-1, j-1]; [i-1, j]; [i-1, j+1]; [i+1, j-1]; [i+1, j]; [i+1, j+1]];
+        next = list_of_questionmark(pos, :);
     elseif (prev(1)==this(1) || prev(1)==0) && (in || de)
         pos = find([output(i-1, j-1:j+1), output(i+1, j-1:j+1)] == 1, 1);
-        haha = [[i-1, j-1]; [i-1, j]; [i-1, j+1]; [i+1, j-1]; [i+1, j]; [i+1, j+1]];
-        next = haha(pos, :);
-        inCurrent = any(all(pointList.pointsList == next'));
-        flag = inCurrent + 1;
-        return;
+        list_of_questionmark = [[i-1, j-1]; [i-1, j]; [i-1, j+1]; [i+1, j-1]; [i+1, j]; [i+1, j+1]];
+        next = list_of_questionmark(pos, :);
+        if output(next(1), next(2)) == 1
+            inCurrent = any(all(pointList.pointsList == next'));
+            flag = inCurrent + 1;
+            return;
+        end
     elseif prev(1)<this(1) && in == 0 % like it in the graph
         [~, pos] = max(grad(i+1, j-1:j+1));
         next = [i+1, j+pos-2];
@@ -101,12 +107,12 @@ else
     de = neibour(1); in = neibour(3);
     if (prev(2)==this(2) || prev(2)==0) && ~in && ~de % edge takes a turn here
         [~, pos] = max([grad(i-1:i+1, j-1); grad(i-1:i+1, j+1)]);
-        haha = [[i-1, j-1]; [i, j-1]; [i+1, j-1]; [i-1, j+1]; [i, j+1]; [i+1, j+1]];
-        next = haha(pos, :);
+        list_of_questionmark = [[i-1, j-1]; [i, j-1]; [i+1, j-1]; [i-1, j+1]; [i, j+1]; [i+1, j+1]];
+        next = list_of_questionmark(pos, :);
     elseif (prev(2)==this(2) || prev(2)==0) && (in || de)
         pos = find([output(i-1:i+1, j-1); output(i-1:i+1, j+1)] == 1, 1);
-        haha = [[i-1, j-1]; [i, j-1]; [i+1, j-1]; [i-1, j+1]; [i, j+1]; [i+1, j+1]];
-        next = haha(pos, :);
+        list_of_questionmark = [[i-1, j-1]; [i, j-1]; [i+1, j-1]; [i-1, j+1]; [i, j+1]; [i+1, j+1]];
+        next = list_of_questionmark(pos, :);
         inCurrent = any(all(pointList.pointsList == next'));
         flag = inCurrent + 1;
         return;
