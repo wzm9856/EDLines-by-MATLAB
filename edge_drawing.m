@@ -1,13 +1,16 @@
 function [output, pointsMat, edgeList, edgeNo] = edge_drawing(grad, thre, anch, orin)
-ori = (orin>pi/4 & orin<3*pi/4) | (orin>5*pi/4 & orin<7*pi/4);
+ori = (orin>pi/4 & orin<3*pi/4) | (orin>5*pi/4 & orin<7*pi/4); clear orin;
 pointsMat = repmat(Points, size(grad,1), size(grad,2));
-edgeList = repmat(EdgeSeg(size(grad)), 1, 20000);
+edgeList = repmat(EdgeSeg(), 1, 20000);
 edgeNo = 0;
 output = false(size(grad));
 for i = 2:size(grad, 1)-1
     for j = 2:size(grad, 2)-1
         if anch(i, j) == 1 && output(i, j) == 0 % start drawing edge from (i,j)
             edgeNo = edgeNo+1;
+            if edgeNo == 5
+                
+            end
             this = [i, j];
             prev = [0, 0];
             edgeList(edgeNo) = edgeList(edgeNo).addPoint(this(1), this(2));
@@ -20,31 +23,33 @@ for i = 2:size(grad, 1)-1
                 edgeList(edgeNo) = edgeList(edgeNo).addPoint(this(1), this(2));
                 pointsMat(this(1), this(2)) = pointsMat(this(1), this(2)).addEdge(edgeNo, 0);
                 output(this(1), this(2)) = 1;
-                if(this(1)==279&&this(2)==703)
-                    
-                end
                 [flag, next] = find_next(this, prev, grad, thre, ori(this(1),this(2)), output, edgeList(edgeNo));
             end
             if flag == 0
                 pointsMat(this(1), this(2)).isEnd = 1;
             elseif flag == 1
                 if pointsMat(next(1), next(2)).isEnd == 0 
+                    if edgeNo == 99 || edgeNo==100
+                    
+                    end
                     % if next is in the middle of some edge, we need to split the edge first
-                    [seg1, seg2] = edgeList(pointsMat(next(1), next(2)).edgeNo(1)).splitList(next(1), next(2));
                     oldNo = pointsMat(next(1), next(2)).edgeNo(1);
+                    [seg1, seg2] = edgeList(oldNo).splitList(next(1), next(2));
                     edgeNo = edgeNo + 1;
                     for a = 1:seg2.length
                         x = seg2.pointsList(1, a); y = seg2.pointsList(2, a);
-                        pointsMat(x, y).changeEdge(oldNo, edgeNo);
+                        pointsMat(x, y) = pointsMat(x, y).changeEdge(oldNo, edgeNo);
                     end
-                pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo-1, 1); 
-                pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(oldNo, 1); 
-                edgeList(oldNo) = seg1;
-                edgeList(edgeNo) = seg2;
+                    pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo-1, 1); 
+                    pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(oldNo, 1); 
+                    edgeList(oldNo) = seg1;
+                    edgeList(edgeNo) = seg2;
+                    clear seg1 seg2 x y oldNo a;
                 elseif pointsMat(next(1), next(2)).isEnd == 1
                     pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo, 1);
                 end
             end
+            clear flag;
         end
     end
 end

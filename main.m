@@ -1,6 +1,6 @@
 clearvars; close all; clc;
 image = rgb2gray(imread("1.png"));
-imshow(image);
+%imshow(image);
 disp('1');
 
 gauss = fspecial('gaussian',[5,5],1);
