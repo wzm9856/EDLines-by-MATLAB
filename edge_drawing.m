@@ -8,9 +8,6 @@ for i = 2:size(grad, 1)-1
     for j = 2:size(grad, 2)-1
         if anch(i, j) == 1 && output(i, j) == 0 % start drawing edge from (i,j)
             edgeNo = edgeNo+1;
-            if edgeNo == 5
-                
-            end
             this = [i, j];
             prev = [0, 0];
             edgeList(edgeNo) = edgeList(edgeNo).addPoint(this(1), this(2));
@@ -29,18 +26,19 @@ for i = 2:size(grad, 1)-1
                 pointsMat(this(1), this(2)).isEnd = 1;
             elseif flag == 1
                 if pointsMat(next(1), next(2)).isEnd == 0 
-                    if edgeNo == 99 || edgeNo==100
-                    
-                    end
-                    % if next is in the middle of some edge, we need to split the edge first
+                    edgeList(edgeNo) = edgeList(edgeNo).addPoint(next(1), next(2));
+                    pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo, 1); 
+                    % if next is in the middle of some edge, we need to split the edge
                     oldNo = pointsMat(next(1), next(2)).edgeNo(1);
-                    [seg1, seg2] = edgeList(oldNo).splitList(next(1), next(2));
-                    edgeNo = edgeNo + 1;
-                    for a = 1:seg2.length
-                        x = seg2.pointsList(1, a); y = seg2.pointsList(2, a);
-                        pointsMat(x, y) = pointsMat(x, y).changeEdge(oldNo, edgeNo);
+                    if oldNo == 5
+                        
                     end
-                    pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo-1, 1); 
+                    edgeNo = edgeNo + 1;
+                    if edgeNo == 10
+                        
+                    end
+                    [seg1, seg2] = edgeList(oldNo).splitList(next(1), next(2));
+                    pointsMat = changeEdgeNo(pointsMat, seg2, oldNo, edgeNo, 1); % it changed the edgeNo of the ending point
                     pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(oldNo, 1); 
                     edgeList(oldNo) = seg1;
                     edgeList(edgeNo) = seg2;
@@ -139,12 +137,25 @@ else
         inCurrent = any(all(pointList.pointsList == next'));
         flag = inCurrent + 1;
         return;
-
     end
 end
 if grad(next(1), next(2)) > thre % the point to be connected should in the edge zone
     flag = 3;
 else
     flag = 0;
+end
+end
+
+function [pointsMat] = changeEdgeNo(pointsMat, edgeSeg, oldNo, newNo, first)
+if first
+    try
+        pointsMat(edgeSeg.pointsList(1,1),edgeSeg.pointsList(2,1)) = pointsMat(edgeSeg.pointsList(1,1),edgeSeg.pointsList(2,1)).changeEdge(oldNo, newNo);
+    catch
+        
+    end
+end
+for i = 2:edgeSeg.length
+    x = edgeSeg.pointsList(1,i); y = edgeSeg.pointsList(2,i);
+    pointsMat(x, y) = pointsMat(x, y).changeEdge(oldNo, newNo);
 end
 end
