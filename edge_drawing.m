@@ -1,7 +1,7 @@
 function [output, pointsMat, edgeList, edgeNo] = edge_drawing(grad, thre, anch, orin)
 ori = (orin>pi/4 & orin<3*pi/4) | (orin>5*pi/4 & orin<7*pi/4); clear orin;
 pointsMat = repmat(Points, size(grad,1), size(grad,2));
-edgeList = repmat(EdgeSeg(), 1, 20000);
+edgeList = repmat(EdgeSeg(), 1, 50000);
 edgeNo = 0;
 output = false(size(grad));
 for i = 2:size(grad, 1)-1
@@ -30,24 +30,16 @@ for i = 2:size(grad, 1)-1
                     pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo, 1); 
                     % if next is in the middle of some edge, we need to split the edge
                     oldNo = pointsMat(next(1), next(2)).edgeNo(1);
-                    if oldNo == 5
-                        
-                    end
                     edgeNo = edgeNo + 1;
-                    if edgeNo == 10
-                        
-                    end
                     [seg1, seg2] = edgeList(oldNo).splitList(next(1), next(2));
                     pointsMat = changeEdgeNo(pointsMat, seg2, oldNo, edgeNo, 1); % it changed the edgeNo of the ending point
                     pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(oldNo, 1); 
                     edgeList(oldNo) = seg1;
                     edgeList(edgeNo) = seg2;
-                    clear seg1 seg2 x y oldNo a;
                 elseif pointsMat(next(1), next(2)).isEnd == 1
                     pointsMat(next(1), next(2)) = pointsMat(next(1), next(2)).addEdge(edgeNo, 1);
                 end
             end
-            clear flag;
         end
     end
 end
@@ -148,11 +140,7 @@ end
 
 function [pointsMat] = changeEdgeNo(pointsMat, edgeSeg, oldNo, newNo, first)
 if first
-    try
-        pointsMat(edgeSeg.pointsList(1,1),edgeSeg.pointsList(2,1)) = pointsMat(edgeSeg.pointsList(1,1),edgeSeg.pointsList(2,1)).changeEdge(oldNo, newNo);
-    catch
-        
-    end
+    pointsMat(edgeSeg.pointsList(1,1),edgeSeg.pointsList(2,1)) = pointsMat(edgeSeg.pointsList(1,1),edgeSeg.pointsList(2,1)).changeEdge(oldNo, newNo);
 end
 for i = 2:edgeSeg.length
     x = edgeSeg.pointsList(1,i); y = edgeSeg.pointsList(2,i);
