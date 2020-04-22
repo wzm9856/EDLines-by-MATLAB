@@ -8,6 +8,9 @@ for i = 2:size(grad, 1)-1
     for j = 2:size(grad, 2)-1
         if anch(i, j) == 1 && output(i, j) == 0 % start drawing edge from (i,j)
             edgeNo = edgeNo+1;
+            if edgeNo == 598
+                
+            end
             this = [i, j];
             prev = [0, 0];
             edgeList(edgeNo) = edgeList(edgeNo).addPoint(this(1), this(2));

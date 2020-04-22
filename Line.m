@@ -2,7 +2,7 @@ classdef Line
     properties
         start = [0, 0];
         ending = [0, 0];
-        length = 0;
+        length = 0;%max=230
         pointsList = zeros(2,50);
         coef = [0, 0];
         ori = false; % 1 for vertical, 0 for horizontal

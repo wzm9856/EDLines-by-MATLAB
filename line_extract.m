@@ -1,5 +1,5 @@
 function [lineList, lineCount] = line_extract(edgeList, edgeCount, pointsMat, MIN_LENGTH)
-lineList = repmat(Line, 1, 1000);
+lineList = repmat(Line, 1, 3000);
 lineCount = 0; % how many line have we got so far
 checked = false(1, edgeCount); % is the specific edge segment has been checked for lines
 for a = 1:edgeCount
